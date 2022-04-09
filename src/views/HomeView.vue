@@ -1,18 +1,30 @@
 <template>
-  <div class="home">
-    <img alt="Vue logo" src="../assets/logo.png" />
-    <HelloWorld msg="Welcome to Your Vue.js + TypeScript App" />
-  </div>
+  <layout :data="list"></layout>
 </template>
 
 <script lang="ts">
-import { defineComponent } from "vue";
-import HelloWorld from "@/components/HelloWorld.vue"; // @ is an alias to /src
+import { defineComponent, ref, onMounted } from 'vue'
+import Layout from '@/components/layout.vue'
+import { mock1 } from '@/components/mock'
+import type { FlowItem } from '../components/data'
 
 export default defineComponent({
-  name: "HomeView",
+  name: 'HomeView',
   components: {
-    HelloWorld,
+    Layout,
   },
-});
+  setup() {
+    const list = ref<FlowItem[]>([])
+
+    onMounted(() => {
+      setTimeout(() => {
+        list.value = mock1
+      }, 200)
+    })
+
+    return {
+      list,
+    }
+  },
+})
 </script>
