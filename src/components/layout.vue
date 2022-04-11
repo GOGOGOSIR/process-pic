@@ -9,10 +9,21 @@
       <div class="box-scale" :style="{ transform: `scale(${scale / 100})` }">
         <template v-for="(item, index) in list" :key="index">
           <branch-item
-            v-if="item.type === 'branch'"
+            v-if="
+              item.type === 'branch' &&
+              item.branchList &&
+              item.branchList.length
+            "
             :list="item.branchList"
+            :parent-list="list"
+            :index="index"
           ></branch-item>
-          <node-item v-else :type="item.type"></node-item>
+          <node-item
+            v-if="item.type !== 'branch'"
+            :type="item.type"
+            :parent-list="list"
+            :index="index"
+          ></node-item>
         </template>
         <end-item v-if="list.length"></end-item>
       </div>

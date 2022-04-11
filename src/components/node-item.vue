@@ -3,12 +3,12 @@
     <div class="node-wrapper-box">
       <div class="title" :style="{ background: data.bgColor }">
         {{ data.text }}
-        <span>删除</span>
+        <span @click="deleteNode">删除</span>
       </div>
     </div>
     <div class="add-node-btn-box">
       <div class="add-node-btn">
-        <add-button></add-button>
+        <add-button @add-node="handleAddNode"></add-button>
       </div>
     </div>
   </div>
@@ -17,12 +17,22 @@
 <script lang="ts">
 import { defineComponent, PropType, computed } from 'vue'
 import AddButton from './add-button.vue'
+import useOperate from './use-operate'
+import type { FlowItem, NodeItemType } from './data'
 
 export default defineComponent({
   name: 'NodeItem',
   props: {
     type: {
       type: String as PropType<'sponsor' | 'approver' | 'notice'>,
+      required: true,
+    },
+    index: {
+      type: Number,
+      required: true,
+    },
+    parentList: {
+      type: Array as PropType<FlowItem[]>,
       required: true,
     },
   },
@@ -47,9 +57,21 @@ export default defineComponent({
     const data = computed(() => {
       return dataMap[props.type]
     })
+    const { addNode } = useOperate()
+
+    const deleteNode = () => {
+      const p_list = props.parentList
+      p_list.splice(props.index, 1)
+    }
+
+    const handleAddNode = (type: NodeItemType) => {
+      addNode(type, props.parentList, props.index)
+    }
 
     return {
       data,
+      deleteNode,
+      handleAddNode,
     }
   },
 })

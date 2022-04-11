@@ -3,11 +3,11 @@
     <button type="button" class="btn">
       <i class="iconfont iconfangda"></i>
     </button>
-    <template #popper>
+    <template #popper="{ hide }">
       <ul class="list">
-        <li class="item">审批人</li>
-        <li class="item">抄送人</li>
-        <li class="item">分支条件</li>
+        <li class="item" @click="emitEvent('approver', hide)">审批人</li>
+        <li class="item" @click="emitEvent('notice', hide)">抄送人</li>
+        <li class="item" @click="emitEvent('branch', hide)">分支条件</li>
       </ul>
     </template>
   </VDropdown>
@@ -15,11 +15,20 @@
 
 <script lang="ts">
 import { defineComponent } from 'vue'
+import type { NodeItemType } from './data'
 
 export default defineComponent({
   name: 'AddButton',
-  setup() {
-    //
+  emits: ['add-node'],
+  setup(_props, { emit }) {
+    const emitEvent = (type: NodeItemType, hide: () => void) => {
+      emit('add-node', type)
+      hide()
+    }
+
+    return {
+      emitEvent,
+    }
   },
 })
 </script>

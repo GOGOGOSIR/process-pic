@@ -2,7 +2,7 @@
   <div class="branch-wrap">
     <div class="branch-box-wrap">
       <div class="branch-box">
-        <button class="add-branch">添加条件</button>
+        <button class="add-branch" @click="addCondition">添加条件</button>
         <!-- 条件节点 -->
         <template v-for="(item, index) in list" :key="`p-${index}`">
           <div class="branch-col">
@@ -26,25 +26,36 @@
               <div class="condition-node-box">
                 <div class="auto-judge">
                   <div class="title-wrapper">
-                    <span>条件1</span>
-                    <span>优先级1</span>
-                    <span>复制</span>
-                    <span>删除</span>
+                    <span>
+                      条件
+                      {{ item.branchIndex }}
+                      <span v-if="item.duplicationNode">（复制）</span>
+                    </span>
+                    <span>优先级{{ item.branchIndex }}</span>
+                    <span @click="copyCondition(item, index)">复制</span>
+                    <span @click="deleteCondition(index)">删除</span>
                   </div>
                   <div class="content">请设置条件</div>
-                  <div v-if="index !== 0" class="operate-item operate-left">
+                  <div
+                    v-if="index !== 0"
+                    class="operate-item operate-left"
+                    @click="translateCondition(index, index - 1)"
+                  >
                     <i class="iconfont iconfanhui"></i>
                   </div>
                   <div
                     v-if="index !== list.length - 1"
                     class="operate-item operate-right"
+                    @click="translateCondition(index, index + 1)"
                   >
                     <i class="iconfont iconjiantou"></i>
                   </div>
                 </div>
                 <div class="add-node-btn-box">
                   <div class="add-node-btn">
-                    <add-button></add-button>
+                    <add-button
+                      @add-node="(type) => handleConditionAddNode(type, item)"
+                    ></add-button>
                   </div>
                 </div>
               </div>
@@ -56,10 +67,21 @@
                 :key="`sub-${index}-${subIndex}`"
               >
                 <branch-item
-                  v-if="subItem.type === 'branch'"
+                  v-if="
+                    subItem.type === 'branch' &&
+                    subItem.branchList &&
+                    subItem.branchList.length
+                  "
                   :list="subItem.branchList"
+                  :parent-list="item.nodeList"
+                  :index="subIndex"
                 ></branch-item>
-                <node-item v-else :type="subItem.type"></node-item>
+                <node-item
+                  v-if="subItem.type !== 'branch'"
+                  :type="subItem.type"
+                  :parent-list="item.nodeList"
+                  :index="subIndex"
+                ></node-item>
               </template>
             </template>
           </div>
@@ -67,7 +89,7 @@
       </div>
       <div class="add-node-btn-box">
         <div class="add-node-btn">
-          <add-button></add-button>
+          <add-button @add-node="handleAddNode"></add-button>
         </div>
       </div>
     </div>
@@ -78,7 +100,8 @@
 import { defineComponent, PropType } from 'vue'
 import AddButton from './add-button.vue'
 import NodeItem from './node-item.vue'
-import type { BranchItem } from './data'
+import useOperate from './use-operate'
+import type { BranchItem, FlowItem, NodeItemType } from './data'
 
 export default defineComponent({
   name: 'BranchItem',
@@ -87,13 +110,89 @@ export default defineComponent({
       type: Array as PropType<BranchItem[]>,
       required: true,
     },
+    parentList: {
+      type: Array as PropType<FlowItem[]>,
+      required: true,
+    },
+    index: {
+      type: Number,
+      required: true,
+    },
   },
   components: {
     AddButton,
     NodeItem,
   },
-  setup() {
-    //
+  setup(props) {
+    const { addNode } = useOperate()
+
+    // 添加一个新的条件
+    const addCondition = () => {
+      const list = props.list
+      list.push({
+        branchIndex: list.length + 1,
+      })
+    }
+
+    // 删除一个条件
+    const deleteCondition = (index: number) => {
+      const list = props.list
+      const len = list.length
+      // 先判断如果条件少于2个的话，则清空改条件分支
+      const count = len <= 2 ? len : 1
+      const deleteIndex = len <= 2 ? 0 : index
+      let brotherNode: FlowItem[] = []
+      if (len <= 2) {
+        const node = list[len - 1 - index].nodeList
+        node && (brotherNode = node)
+      }
+      list.splice(deleteIndex, count)
+      if (brotherNode) {
+        for (const node of brotherNode) {
+          const parentList = props.parentList
+          parentList.push(node)
+        }
+      }
+    }
+
+    // 平移条件
+    const translateCondition = (currentIndex: number, targetIndex: number) => {
+      const list = props.list
+      const t = list[currentIndex]
+      list[currentIndex] = list[targetIndex]
+      list[targetIndex] = t
+    }
+
+    // 复制一个条件
+    const copyCondition = (item: BranchItem, index: number) => {
+      const nextIndex = index + 1
+      const list = props.list
+      const copyItem = JSON.parse(JSON.stringify(item))
+      list.splice(nextIndex, 0, {
+        ...copyItem,
+        duplicationNode: true,
+      })
+    }
+
+    const handleAddNode = (type: NodeItemType) => {
+      addNode(type, props.parentList, props.index)
+    }
+
+    const handleConditionAddNode = (type: NodeItemType, item: BranchItem) => {
+      if (!item.nodeList) {
+        item.nodeList = []
+      }
+      addNode(type, item.nodeList, -1)
+    }
+
+    return {
+      addCondition,
+      deleteCondition,
+      translateCondition,
+      copyCondition,
+      handleAddNode,
+      handleConditionAddNode,
+    }
   },
 })
 </script>
@@ -176,19 +275,19 @@ export default defineComponent({
         }
         .border-left-top-line {
           top: -3px;
-          left: -3px;
+          left: -1px;
         }
         .border-left-bottom-line {
           bottom: -3px;
-          left: -3px;
+          left: -1px;
         }
         .border-right-top-line {
           top: -3px;
-          right: -3px;
+          right: -1px;
         }
         .border-right-bottom-line {
           bottom: -3px;
-          right: -3px;
+          right: -1px;
         }
         .condition-node {
           min-height: 220px;
