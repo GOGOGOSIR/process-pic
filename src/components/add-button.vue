@@ -1,5 +1,10 @@
 <template>
-  <VDropdown placement="right-start" :distance="12">
+  <VDropdown
+    placement="right-start"
+    :distance="12"
+    container=".flow-design"
+    :shift="false"
+  >
     <button type="button" class="btn">
       <i class="iconfont iconfangda"></i>
     </button>
