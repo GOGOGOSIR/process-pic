@@ -5,7 +5,7 @@
         <button class="add-branch" @click="addCondition">添加条件</button>
         <!-- 条件节点 -->
         <template v-for="(item, index) in list" :key="`p-${index}`">
-          <div class="branch-col">
+          <div class="branch-col" :ref="(el) => collectDom(el)">
             <div
               v-if="index === 0"
               class="border-line border-left-top-line"
@@ -97,10 +97,11 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, PropType } from 'vue'
+import { defineComponent, PropType, ref, nextTick } from 'vue'
 import AddButton from './add-button.vue'
 import NodeItem from './node-item.vue'
 import useOperate from './use-operate'
+import { scrollToCenter } from './utils'
 import type { BranchItem, FlowItem, NodeItemType } from './data'
 
 export default defineComponent({
@@ -125,17 +126,28 @@ export default defineComponent({
   },
   setup(props) {
     const { addNode } = useOperate()
+    const branchWrapperList = ref<HTMLElement[]>([])
+
+    const setCenter = (targetIndex: number) => {
+      nextTick(() => {
+        const targetDom = branchWrapperList.value[targetIndex]
+        scrollToCenter(targetDom)
+      })
+    }
 
     // 添加一个新的条件
     const addCondition = () => {
+      branchWrapperList.value = []
       const list = props.list
       list.push({
         branchIndex: list.length + 1,
       })
+      setCenter(list.length - 1)
     }
 
     // 删除一个条件
     const deleteCondition = (index: number) => {
+      branchWrapperList.value = []
       const list = props.list
       const len = list.length
       // 先判断如果条件少于2个的话，则清空改条件分支
@@ -157,14 +169,17 @@ export default defineComponent({
 
     // 平移条件
     const translateCondition = (currentIndex: number, targetIndex: number) => {
+      branchWrapperList.value = []
       const list = props.list
       const t = list[currentIndex]
       list[currentIndex] = list[targetIndex]
       list[targetIndex] = t
+      setCenter(targetIndex)
     }
 
     // 复制一个条件
     const copyCondition = (item: BranchItem, index: number) => {
+      branchWrapperList.value = []
       const nextIndex = index + 1
       const list = props.list
       const copyItem = JSON.parse(JSON.stringify(item))
@@ -172,20 +187,51 @@ export default defineComponent({
         ...copyItem,
         duplicationNode: true,
       })
+      setCenter(nextIndex)
     }
 
     const handleAddNode = (type: NodeItemType) => {
-      addNode(type, props.parentList, props.index)
+      branchWrapperList.value = []
+
+      addNode({
+        type,
+        list: props.parentList,
+        index: props.index,
+        callback: () => {
+          console.log(451116)
+          if (type === 'branch') {
+            console.log(123)
+            setCenter(props.index + 1)
+          }
+        },
+      })
     }
 
     const handleConditionAddNode = (type: NodeItemType, item: BranchItem) => {
+      branchWrapperList.value = []
       if (!item.nodeList) {
         item.nodeList = []
       }
-      addNode(type, item.nodeList, -1)
+
+      addNode({
+        type,
+        list: item.nodeList,
+        index: -1,
+        callback: () => {
+          if (type === 'branch') {
+            console.log(456)
+            setCenter(0)
+          }
+        },
+      })
+    }
+
+    const collectDom = (el?: any) => {
+      el && branchWrapperList.value.push(el as HTMLElement)
     }
 
     return {
+      collectDom,
       addCondition,
       deleteCondition,
       translateCondition,

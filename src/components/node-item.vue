@@ -65,7 +65,7 @@ export default defineComponent({
     }
 
     const handleAddNode = (type: NodeItemType) => {
-      addNode(type, props.parentList, props.index)
+      addNode({ type, list: props.parentList, index: props.index })
     }
 
     return {
