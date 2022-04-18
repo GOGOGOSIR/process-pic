@@ -1,6 +1,8 @@
+import { nextTick, ref } from 'vue'
 import type { NodeItemType, FlowItem } from './data'
 
 export default () => {
+  const branchUpdate = ref(false)
   const addNode = (props: {
     type: NodeItemType
     list: FlowItem[]
@@ -15,6 +17,7 @@ export default () => {
       const othersNode = list.slice(nextIndex, len)
       list.splice(nextIndex, len, {
         type: 'branch',
+        sign: 'add',
         branchList: [
           {
             branchIndex: 1,
@@ -25,13 +28,16 @@ export default () => {
           },
         ],
       })
+      nextTick(() => {
+        branchUpdate.value = true
+      })
     } else {
       const item = data ? { type, nodeData: data } : { type }
       list.splice(nextIndex, 0, item)
     }
-    console.log('cal', callback)
+
     callback && callback(list)
   }
 
-  return { addNode }
+  return { addNode, branchUpdate }
 }

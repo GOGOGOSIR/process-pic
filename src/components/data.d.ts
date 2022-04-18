@@ -8,6 +8,7 @@ export interface BranchItem {
 
 export interface FlowItem {
   type: 'branch' | 'sponsor' | 'approver' | 'notice' // 类型为条件类型和node类型
+  sign?: string
   nodeData?: Record<string, any> // 节点绑定的数据
   branchList?: BranchItem[] // 条件列表
 }

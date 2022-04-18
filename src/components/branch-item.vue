@@ -1,5 +1,5 @@
 <template>
-  <div class="branch-wrap">
+  <div class="branch-wrap" ref="branchWrap">
     <div class="branch-box-wrap">
       <div class="branch-box">
         <button class="add-branch" @click="addCondition">添加条件</button>
@@ -97,7 +97,7 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, PropType, ref, nextTick } from 'vue'
+import { defineComponent, PropType, ref, nextTick, onMounted, watch } from 'vue'
 import AddButton from './add-button.vue'
 import NodeItem from './node-item.vue'
 import useOperate from './use-operate'
@@ -125,19 +125,21 @@ export default defineComponent({
     NodeItem,
   },
   setup(props) {
-    const { addNode } = useOperate()
-    const branchWrapperList = ref<HTMLElement[]>([])
+    const { addNode, branchUpdate } = useOperate()
+    const branchColList = ref<HTMLElement[]>([])
+    const branchWrap = ref<HTMLElement>()
 
     const setCenter = (targetIndex: number) => {
       nextTick(() => {
-        const targetDom = branchWrapperList.value[targetIndex]
+        console.log(branchColList.value)
+        const targetDom = branchColList.value[targetIndex]
         scrollToCenter(targetDom)
       })
     }
 
     // 添加一个新的条件
     const addCondition = () => {
-      branchWrapperList.value = []
+      branchColList.value = []
       const list = props.list
       list.push({
         branchIndex: list.length + 1,
@@ -147,7 +149,7 @@ export default defineComponent({
 
     // 删除一个条件
     const deleteCondition = (index: number) => {
-      branchWrapperList.value = []
+      branchColList.value = []
       const list = props.list
       const len = list.length
       // 先判断如果条件少于2个的话，则清空改条件分支
@@ -169,7 +171,7 @@ export default defineComponent({
 
     // 平移条件
     const translateCondition = (currentIndex: number, targetIndex: number) => {
-      branchWrapperList.value = []
+      branchColList.value = []
       const list = props.list
       const t = list[currentIndex]
       list[currentIndex] = list[targetIndex]
@@ -179,7 +181,7 @@ export default defineComponent({
 
     // 复制一个条件
     const copyCondition = (item: BranchItem, index: number) => {
-      branchWrapperList.value = []
+      branchColList.value = []
       const nextIndex = index + 1
       const list = props.list
       const copyItem = JSON.parse(JSON.stringify(item))
@@ -191,24 +193,17 @@ export default defineComponent({
     }
 
     const handleAddNode = (type: NodeItemType) => {
-      branchWrapperList.value = []
+      branchColList.value = []
 
       addNode({
         type,
         list: props.parentList,
         index: props.index,
-        callback: () => {
-          console.log(451116)
-          if (type === 'branch') {
-            console.log(123)
-            setCenter(props.index + 1)
-          }
-        },
       })
     }
 
     const handleConditionAddNode = (type: NodeItemType, item: BranchItem) => {
-      branchWrapperList.value = []
+      branchColList.value = []
       if (!item.nodeList) {
         item.nodeList = []
       }
@@ -217,20 +212,60 @@ export default defineComponent({
         type,
         list: item.nodeList,
         index: -1,
-        callback: () => {
-          if (type === 'branch') {
-            console.log(456)
-            setCenter(0)
-          }
-        },
       })
     }
 
+    // 收集dom
     const collectDom = (el?: any) => {
-      el && branchWrapperList.value.push(el as HTMLElement)
+      el && branchColList.value.push(el as HTMLElement)
     }
 
+    // 设置分支标志
+    const setBranchSign = () => {
+      nextTick(() => {
+        if (branchWrap.value) {
+          const data = props.parentList[props.index]
+          const sign = data.sign
+          console.log(sign)
+          if (sign) {
+            branchWrap.value.setAttribute('data-sign', sign)
+          }
+        }
+      })
+    }
+
+    const signToViewPortCenter = () => {
+      const el = document.querySelector(
+        "[data-sign='add']",
+      ) as HTMLElement | null
+      console.log(el, props.parentList[props.index].sign)
+      if (el) {
+        scrollToCenter(el, (targetDom) => {
+          // targetDom.removeAttribute('data-sign')
+          branchUpdate.value = false
+          // const data = props.parentList[props.index]
+          // data.sign = undefined
+          // console.log(props.parentList[props.index])
+        })
+      }
+    }
+
+    watch(
+      () => branchUpdate.value,
+      (val: boolean) => {
+        console.log(val, 'watch')
+        if (val) {
+          signToViewPortCenter()
+        }
+      },
+    )
+
+    onMounted(() => {
+      setBranchSign()
+    })
+
     return {
+      branchWrap,
       collectDom,
       addCondition,
       deleteCondition,

@@ -1,5 +1,8 @@
 // 视口居中
-export const scrollToCenter = (targetDom: HTMLElement) => {
+export const scrollToCenter = (
+  targetDom: HTMLElement,
+  callback?: (targetDom: HTMLElement) => void,
+) => {
   const layout = document.querySelector('.flow-design')
   const documentWidth = document.body.clientWidth
   // const documentHeight = document.body.clientHeight
@@ -15,5 +18,7 @@ export const scrollToCenter = (targetDom: HTMLElement) => {
       left: scrollLeft,
       behavior: 'smooth',
     })
+
+    callback && callback(targetDom)
   }
 }
