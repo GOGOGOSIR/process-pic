@@ -34,7 +34,7 @@ export default () => {
         const el = document.querySelector(
           `[data-sign='add-branch-${addBranchCount}']`,
         ) as HTMLElement | null
-        console.log(el)
+        // console.log(el)
         if (el) {
           scrollToCenter(el)
         }
