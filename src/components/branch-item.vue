@@ -1,5 +1,5 @@
 <template>
-  <div class="branch-wrap" ref="branchWrap">
+  <div class="branch-wrap" :data-sign="parentList[index].sign">
     <div class="branch-box-wrap">
       <div class="branch-box">
         <button class="add-branch" @click="addCondition">添加条件</button>
@@ -97,7 +97,7 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, PropType, ref, nextTick, onMounted, watch } from 'vue'
+import { defineComponent, PropType, ref, nextTick } from 'vue'
 import AddButton from './add-button.vue'
 import NodeItem from './node-item.vue'
 import useOperate from './use-operate'
@@ -125,13 +125,11 @@ export default defineComponent({
     NodeItem,
   },
   setup(props) {
-    const { addNode, branchUpdate } = useOperate()
+    const { addNode } = useOperate()
     const branchColList = ref<HTMLElement[]>([])
-    const branchWrap = ref<HTMLElement>()
 
     const setCenter = (targetIndex: number) => {
       nextTick(() => {
-        console.log(branchColList.value)
         const targetDom = branchColList.value[targetIndex]
         scrollToCenter(targetDom)
       })
@@ -220,52 +218,7 @@ export default defineComponent({
       el && branchColList.value.push(el as HTMLElement)
     }
 
-    // 设置分支标志
-    const setBranchSign = () => {
-      nextTick(() => {
-        if (branchWrap.value) {
-          const data = props.parentList[props.index]
-          const sign = data.sign
-          console.log(sign)
-          if (sign) {
-            branchWrap.value.setAttribute('data-sign', sign)
-          }
-        }
-      })
-    }
-
-    const signToViewPortCenter = () => {
-      const el = document.querySelector(
-        "[data-sign='add']",
-      ) as HTMLElement | null
-      console.log(el, props.parentList[props.index].sign)
-      if (el) {
-        scrollToCenter(el, (targetDom) => {
-          // targetDom.removeAttribute('data-sign')
-          branchUpdate.value = false
-          // const data = props.parentList[props.index]
-          // data.sign = undefined
-          // console.log(props.parentList[props.index])
-        })
-      }
-    }
-
-    watch(
-      () => branchUpdate.value,
-      (val: boolean) => {
-        console.log(val, 'watch')
-        if (val) {
-          signToViewPortCenter()
-        }
-      },
-    )
-
-    onMounted(() => {
-      setBranchSign()
-    })
-
     return {
-      branchWrap,
       collectDom,
       addCondition,
       deleteCondition,

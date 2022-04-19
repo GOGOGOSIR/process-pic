@@ -1,23 +1,25 @@
-import { nextTick, ref } from 'vue'
+import { nextTick } from 'vue'
+import { scrollToCenter } from './utils'
 import type { NodeItemType, FlowItem } from './data'
 
+let addBranchCount = 0
+
 export default () => {
-  const branchUpdate = ref(false)
   const addNode = (props: {
     type: NodeItemType
     list: FlowItem[]
     index: number
     data?: Record<string, any>
-    callback?: (list: FlowItem[]) => void
   }) => {
-    const { type, list, index, data, callback } = props
+    const { type, list, index, data } = props
     const nextIndex = index + 1
     if (type === 'branch') {
       const len = list.length
       const othersNode = list.slice(nextIndex, len)
+      addBranchCount++
       list.splice(nextIndex, len, {
         type: 'branch',
-        sign: 'add',
+        sign: `add-branch-${addBranchCount}`,
         branchList: [
           {
             branchIndex: 1,
@@ -29,15 +31,19 @@ export default () => {
         ],
       })
       nextTick(() => {
-        branchUpdate.value = true
+        const el = document.querySelector(
+          `[data-sign='add-branch-${addBranchCount}']`,
+        ) as HTMLElement | null
+        console.log(el)
+        if (el) {
+          scrollToCenter(el)
+        }
       })
     } else {
       const item = data ? { type, nodeData: data } : { type }
       list.splice(nextIndex, 0, item)
     }
-
-    callback && callback(list)
   }
 
-  return { addNode, branchUpdate }
+  return { addNode }
 }
