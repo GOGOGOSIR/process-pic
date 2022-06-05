@@ -6,6 +6,11 @@ const routes: Array<RouteRecordRaw> = [
     path: '/',
     name: 'home',
     component: HomeView
+  },
+  {
+    path: '/bpmn',
+    name: 'bpmn',
+    component: () => import('@/views/bpmn.vue')
   }
 ]
 
