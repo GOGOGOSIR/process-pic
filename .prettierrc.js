@@ -1,8 +1,5 @@
 module.exports = {
-  semi: false,
-  trailingComma: 'all',
-  singleQuote: true,
-  printWidth: 80,
-  tabWidth: 2,
-  endOfLine: 'auto',
+  ...require('@gogogosir/prettier-config'),
+
+  // 下面声明的可以覆盖上面的默认配置
 }

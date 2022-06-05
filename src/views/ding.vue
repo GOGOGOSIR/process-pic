@@ -1,21 +1,25 @@
 <template>
-  <layout :data="list"></layout>
+  <layout :data="list" />
   <div class="op-wrapper">
-    <el-button @click="mockData">有数据</el-button>
-    <el-button type="primary" @click="resetData">重置流程</el-button>
+    <el-button @click="mockData">
+      有数据
+    </el-button>
+    <el-button type="primary" @click="resetData">
+      重置流程
+    </el-button>
   </div>
 </template>
 
 <script lang="ts">
-import { defineComponent, ref, onMounted } from 'vue'
+import { defineComponent, onMounted, ref } from 'vue'
 import Layout from '@/components/layout.vue'
-import { mock1, mock } from '@/components/mock'
+import { mock, mock1 } from '@/components/mock'
 import type { FlowItem } from '../components/data'
 
 export default defineComponent({
   name: 'HomeView',
   components: {
-    Layout,
+    Layout
   },
   setup() {
     const list = ref<FlowItem[]>([])
@@ -37,9 +41,9 @@ export default defineComponent({
     return {
       list,
       mockData,
-      resetData,
+      resetData
     }
-  },
+  }
 })
 </script>
 

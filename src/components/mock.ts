@@ -2,13 +2,13 @@ import type { FlowItem } from './data'
 
 export const mock1: FlowItem[] = [
   {
-    type: 'sponsor',
+    type: 'sponsor'
   },
   {
-    type: 'approver',
+    type: 'approver'
   },
   {
-    type: 'notice',
+    type: 'notice'
   },
   {
     type: 'branch',
@@ -17,28 +17,28 @@ export const mock1: FlowItem[] = [
         branchIndex: 1,
         nodeList: [
           {
-            type: 'approver',
+            type: 'approver'
           },
           {
-            type: 'notice',
+            type: 'notice'
           },
           {
             type: 'branch',
             branchList: [
               {
-                branchIndex: 1,
+                branchIndex: 1
               },
               {
                 branchIndex: 2,
                 nodeList: [
                   {
-                    type: 'notice',
-                  },
-                ],
-              },
-            ],
-          },
-        ],
+                    type: 'notice'
+                  }
+                ]
+              }
+            ]
+          }
+        ]
       },
       {
         branchIndex: 2,
@@ -47,7 +47,7 @@ export const mock1: FlowItem[] = [
             type: 'branch',
             branchList: [
               {
-                branchIndex: 1,
+                branchIndex: 1
               },
               {
                 branchIndex: 2,
@@ -56,44 +56,44 @@ export const mock1: FlowItem[] = [
                     type: 'branch',
                     branchList: [
                       {
-                        branchIndex: 1,
+                        branchIndex: 1
                       },
                       {
-                        branchIndex: 2,
-                      },
-                    ],
-                  },
-                ],
-              },
-            ],
-          },
-        ],
+                        branchIndex: 2
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        ]
       },
       {
         branchIndex: 3,
         nodeList: [
           {
-            type: 'notice',
+            type: 'notice'
           },
           {
             type: 'branch',
             branchList: [
               {
-                branchIndex: 1,
+                branchIndex: 1
               },
               {
-                branchIndex: 2,
-              },
-            ],
-          },
-        ],
-      },
-    ],
-  },
+                branchIndex: 2
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  }
 ]
 
 export const mock: FlowItem[] = [
   {
-    type: 'sponsor',
-  },
+    type: 'sponsor'
+  }
 ]

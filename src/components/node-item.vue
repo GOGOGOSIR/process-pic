@@ -8,51 +8,55 @@
     </div>
     <div class="add-node-btn-box">
       <div class="add-node-btn">
-        <add-button @add-node="handleAddNode"></add-button>
+        <add-button @add-node="handleAddNode" />
       </div>
     </div>
   </div>
 </template>
 
 <script lang="ts">
-import { defineComponent, PropType, computed } from 'vue'
+import { computed, defineComponent } from 'vue'
 import AddButton from './add-button.vue'
 import useOperate from './use-operate'
+import type { PropType } from 'vue'
 import type { FlowItem, NodeItemType } from './data'
 
 export default defineComponent({
   name: 'NodeItem',
+
+  components: {
+    AddButton
+  },
+
   props: {
     type: {
       type: String as PropType<'sponsor' | 'approver' | 'notice'>,
-      required: true,
+      required: true
     },
     index: {
       type: Number,
-      required: true,
+      required: true
     },
     parentList: {
       type: Array as PropType<FlowItem[]>,
-      required: true,
-    },
+      required: true
+    }
   },
-  components: {
-    AddButton,
-  },
+
   setup(props) {
     const dataMap = {
       sponsor: {
         bgColor: 'rgb(87, 106, 149)',
-        text: '发起人',
+        text: '发起人'
       },
       approver: {
         bgColor: 'rgb(255, 148, 62)',
-        text: '审批人',
+        text: '审批人'
       },
       notice: {
         bgColor: 'rgb(50, 150, 250)',
-        text: '抄送人',
-      },
+        text: '抄送人'
+      }
     }
     const data = computed(() => {
       return dataMap[props.type]
@@ -60,8 +64,8 @@ export default defineComponent({
     const { addNode } = useOperate()
 
     const deleteNode = () => {
-      const p_list = props.parentList
-      p_list.splice(props.index, 1)
+      const pList = props.parentList
+      pList.splice(props.index, 1)
     }
 
     const handleAddNode = (type: NodeItemType) => {
@@ -71,9 +75,9 @@ export default defineComponent({
     return {
       data,
       deleteNode,
-      handleAddNode,
+      handleAddNode
     }
-  },
+  }
 })
 </script>
 

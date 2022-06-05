@@ -13,7 +13,7 @@ export const scrollToCenter = (targetDom: HTMLElement) => {
     layout.scrollTo({
       top: scrollTop,
       left: scrollLeft,
-      behavior: 'smooth',
+      behavior: 'smooth'
     })
   }
 }

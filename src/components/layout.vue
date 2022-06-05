@@ -2,55 +2,63 @@
   <div class="layout-wrapper">
     <div class="flow-design">
       <div class="zoom">
-        <button @click="triggerCalcScale('reduce')">减少</button>
+        <button @click="triggerCalcScale('reduce')">
+          减少
+        </button>
         <span>{{ scale }}%</span>
-        <button @click="triggerCalcScale('add')">增加</button>
+        <button @click="triggerCalcScale('add')">
+          增加
+        </button>
       </div>
       <div class="box-scale" :style="{ transform: `scale(${scale / 100})` }">
         <template v-for="(item, index) in list" :key="index">
           <branch-item
             v-if="
               item.type === 'branch' &&
-              item.branchList &&
-              item.branchList.length
+                item.branchList &&
+                item.branchList.length
             "
             :list="item.branchList"
             :parent-list="list"
             :index="index"
-          ></branch-item>
+          />
           <node-item
             v-if="item.type !== 'branch'"
             :type="item.type"
             :parent-list="list"
             :index="index"
-          ></node-item>
+          />
         </template>
-        <end-item v-if="list.length"></end-item>
+        <end-item v-if="list.length" />
       </div>
     </div>
   </div>
 </template>
 
 <script lang="ts">
-import { defineComponent, ref, PropType, watch } from 'vue'
+import { defineComponent, ref, watch } from 'vue'
 import NodeItem from './node-item.vue'
 import EndItem from './end-item.vue'
 import BranchItem from './branch-item.vue'
+import type { PropType } from 'vue'
 import type { FlowItem } from './data'
 
 export default defineComponent({
   name: 'BaseLayout',
-  props: {
-    data: {
-      type: Array as PropType<FlowItem[]>,
-      required: true,
-    },
-  },
+
   components: {
     NodeItem,
     EndItem,
-    BranchItem,
+    BranchItem
   },
+
+  props: {
+    data: {
+      type: Array as PropType<FlowItem[]>,
+      required: true
+    }
+  },
+
   setup(props) {
     const scale = ref(100) // 放大倍数
     const list = ref<FlowItem[]>(props.data)
@@ -59,28 +67,26 @@ export default defineComponent({
       () => props.data,
       (val) => {
         list.value = val
-      },
+      }
     )
 
     // 触发计算放大倍数
     const triggerCalcScale = (type: 'add' | 'reduce') => {
       if (type === 'add') {
-        if (scale.value < 300) {
+        if (scale.value < 300)
           scale.value += 10
-        }
       } else {
-        if (scale.value > 50) {
+        if (scale.value > 50)
           scale.value -= 10
-        }
       }
     }
 
     return {
       scale,
       list,
-      triggerCalcScale,
+      triggerCalcScale
     }
-  },
+  }
 })
 </script>
 

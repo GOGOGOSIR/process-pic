@@ -1,6 +1,6 @@
 import { nextTick } from 'vue'
 import { scrollToCenter } from './utils'
-import type { NodeItemType, FlowItem } from './data'
+import type { FlowItem, NodeItemType } from './data'
 
 let addBranchCount = 0
 
@@ -23,21 +23,20 @@ export default () => {
         branchList: [
           {
             branchIndex: 1,
-            nodeList: othersNode,
+            nodeList: othersNode
           },
           {
-            branchIndex: 2,
-          },
-        ],
+            branchIndex: 2
+          }
+        ]
       })
       nextTick(() => {
         const el = document.querySelector(
-          `[data-sign='add-branch-${addBranchCount}']`,
+          `[data-sign='add-branch-${addBranchCount}']`
         ) as HTMLElement | null
         // console.log(el)
-        if (el) {
+        if (el)
           scrollToCenter(el)
-        }
       })
     } else {
       const item = data ? { type, nodeData: data } : { type }

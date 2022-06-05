@@ -1,5 +1,5 @@
 <template>
-  <VDropdown
+  <v-dropdown
     placement="right-start"
     :distance="12"
     container=".flow-design"
@@ -10,12 +10,18 @@
     </button>
     <template #popper="{ hide }">
       <ul class="list">
-        <li class="item" @click="emitEvent('approver', hide)">审批人</li>
-        <li class="item" @click="emitEvent('notice', hide)">抄送人</li>
-        <li class="item" @click="emitEvent('branch', hide)">分支条件</li>
+        <li class="item" @click="emitEvent('approver', hide)">
+          审批人
+        </li>
+        <li class="item" @click="emitEvent('notice', hide)">
+          抄送人
+        </li>
+        <li class="item" @click="emitEvent('branch', hide)">
+          分支条件
+        </li>
       </ul>
     </template>
-  </VDropdown>
+  </v-dropdown>
 </template>
 
 <script lang="ts">
@@ -32,9 +38,9 @@ export default defineComponent({
     }
 
     return {
-      emitEvent,
+      emitEvent
     }
-  },
+  }
 })
 </script>
 

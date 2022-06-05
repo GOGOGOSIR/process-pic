@@ -2,24 +2,26 @@
   <div class="branch-wrap" :data-sign="parentList[index].sign">
     <div class="branch-box-wrap">
       <div class="branch-box">
-        <button class="add-branch" @click="addCondition">添加条件</button>
+        <button class="add-branch" @click="addCondition">
+          添加条件
+        </button>
         <!-- 条件节点 -->
-        <template v-for="(item, index) in list" :key="`p-${index}`">
-          <div class="branch-col" :ref="(el) => collectDom(el)">
+        <template v-for="(item, pIndex) in list" :key="`p-${pIndex}`">
+          <div :ref="(el) => collectDom(el)" class="branch-col">
             <div
-              v-if="index === 0"
+              v-if="pIndex === 0"
               class="border-line border-left-top-line"
             ></div>
             <div
-              v-if="index === 0"
+              v-if="pIndex === 0"
               class="border-line border-left-bottom-line"
             ></div>
             <div
-              v-if="index === list.length - 1"
+              v-if="pIndex === list.length - 1"
               class="border-line border-right-top-line"
             ></div>
             <div
-              v-if="index === list.length - 1"
+              v-if="pIndex === list.length - 1"
               class="border-line border-right-bottom-line"
             ></div>
             <div class="condition-node">
@@ -32,21 +34,23 @@
                       <span v-if="item.duplicationNode">（复制）</span>
                     </span>
                     <span>优先级{{ item.branchIndex }}</span>
-                    <span @click="copyCondition(item, index)">复制</span>
-                    <span @click="deleteCondition(index)">删除</span>
+                    <span @click="copyCondition(item, pIndex)">复制</span>
+                    <span @click="deleteCondition(pIndex)">删除</span>
                   </div>
-                  <div class="content">请设置条件</div>
+                  <div class="content">
+                    请设置条件
+                  </div>
                   <div
-                    v-if="index !== 0"
+                    v-if="pIndex !== 0"
                     class="operate-item operate-left"
-                    @click="translateCondition(index, index - 1)"
+                    @click="translateCondition(pIndex, pIndex - 1)"
                   >
                     <i class="iconfont iconfanhui"></i>
                   </div>
                   <div
-                    v-if="index !== list.length - 1"
+                    v-if="pIndex !== list.length - 1"
                     class="operate-item operate-right"
-                    @click="translateCondition(index, index + 1)"
+                    @click="translateCondition(pIndex, pIndex + 1)"
                   >
                     <i class="iconfont iconjiantou"></i>
                   </div>
@@ -55,7 +59,7 @@
                   <div class="add-node-btn">
                     <add-button
                       @add-node="(type) => handleConditionAddNode(type, item)"
-                    ></add-button>
+                    />
                   </div>
                 </div>
               </div>
@@ -69,19 +73,19 @@
                 <branch-item
                   v-if="
                     subItem.type === 'branch' &&
-                    subItem.branchList &&
-                    subItem.branchList.length
+                      subItem.branchList &&
+                      subItem.branchList.length
                   "
                   :list="subItem.branchList"
                   :parent-list="item.nodeList"
                   :index="subIndex"
-                ></branch-item>
+                />
                 <node-item
                   v-if="subItem.type !== 'branch'"
                   :type="subItem.type"
                   :parent-list="item.nodeList"
                   :index="subIndex"
-                ></node-item>
+                />
               </template>
             </template>
           </div>
@@ -89,7 +93,7 @@
       </div>
       <div class="add-node-btn-box">
         <div class="add-node-btn">
-          <add-button @add-node="handleAddNode"></add-button>
+          <add-button @add-node="handleAddNode" />
         </div>
       </div>
     </div>
@@ -97,32 +101,35 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, PropType, ref, nextTick } from 'vue'
+import { defineComponent, nextTick, ref } from 'vue'
 import AddButton from './add-button.vue'
 import NodeItem from './node-item.vue'
 import useOperate from './use-operate'
 import { scrollToCenter } from './utils'
+import type { PropType } from 'vue'
 import type { BranchItem, FlowItem, NodeItemType } from './data'
 
 export default defineComponent({
   name: 'BranchItem',
+
+  components: {
+    AddButton,
+    NodeItem
+  },
+
   props: {
     list: {
       type: Array as PropType<BranchItem[]>,
-      required: true,
+      required: true
     },
     parentList: {
       type: Array as PropType<FlowItem[]>,
-      required: true,
+      required: true
     },
     index: {
       type: Number,
-      required: true,
-    },
-  },
-  components: {
-    AddButton,
-    NodeItem,
+      required: true
+    }
   },
   setup(props) {
     const { addNode } = useOperate()
@@ -140,7 +147,7 @@ export default defineComponent({
       branchColList.value = []
       const list = props.list
       list.push({
-        branchIndex: list.length + 1,
+        branchIndex: list.length + 1
       })
       setCenter(list.length - 1)
     }
@@ -185,7 +192,7 @@ export default defineComponent({
       const copyItem = JSON.parse(JSON.stringify(item))
       list.splice(nextIndex, 0, {
         ...copyItem,
-        duplicationNode: true,
+        duplicationNode: true
       })
       setCenter(nextIndex)
     }
@@ -196,20 +203,19 @@ export default defineComponent({
       addNode({
         type,
         list: props.parentList,
-        index: props.index,
+        index: props.index
       })
     }
 
     const handleConditionAddNode = (type: NodeItemType, item: BranchItem) => {
       branchColList.value = []
-      if (!item.nodeList) {
+      if (!item.nodeList)
         item.nodeList = []
-      }
 
       addNode({
         type,
         list: item.nodeList,
-        index: -1,
+        index: -1
       })
     }
 
@@ -225,9 +231,9 @@ export default defineComponent({
       translateCondition,
       copyCondition,
       handleAddNode,
-      handleConditionAddNode,
+      handleConditionAddNode
     }
-  },
+  }
 })
 </script>
 
