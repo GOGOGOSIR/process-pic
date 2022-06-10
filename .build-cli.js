@@ -6,7 +6,7 @@ module.exports = {
     staging: 'npm run build',
   },
   dependencies: [{
-    remoteUrl: 'https://github.com/GOGOGOSIR/demo-release.git',
+    remoteUrl: 'https://github.com/GOGOGOSIR/cropperjs.git',
     defaultBranch: 'master',
   }]
 }
