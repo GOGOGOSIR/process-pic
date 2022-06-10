@@ -1,12 +1,9 @@
 <template>
   <layout :data="list" />
   <div class="op-wrapper">
-    <el-button @click="mockData">
-      有数据
-    </el-button>
-    <el-button type="primary" @click="resetData">
-      重置流程
-    </el-button>
+    <el-button @click="mockData"> 有数据 </el-button>
+    <el-button type="primary" @click="resetData"> 重置流程 </el-button>
+    <el-button type="primary" @click="previewJSON"> 控制台查看json </el-button>
   </div>
 </template>
 
@@ -32,6 +29,10 @@ export default defineComponent({
       list.value = mock
     }
 
+    const previewJSON = () => {
+      console.log(JSON.stringify(list.value))
+    }
+
     onMounted(() => {
       setTimeout(() => {
         list.value = mock1
@@ -41,7 +42,8 @@ export default defineComponent({
     return {
       list,
       mockData,
-      resetData
+      resetData,
+      previewJSON
     }
   }
 })
