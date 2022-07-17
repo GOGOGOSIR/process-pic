@@ -36,10 +36,11 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, ref, watch } from 'vue'
+import { defineComponent, onMounted, ref, watch } from 'vue'
 import NodeItem from './node-item.vue'
 import EndItem from './end-item.vue'
 import BranchItem from './branch-item.vue'
+import Scale from './scale'
 import type { PropType } from 'vue'
 import type { FlowItem } from './data'
 
@@ -62,6 +63,7 @@ export default defineComponent({
   setup(props) {
     const scale = ref(100) // 放大倍数
     const list = ref<FlowItem[]>(props.data)
+    let scaleInstance: any
 
     watch(
       () => props.data,
@@ -80,6 +82,11 @@ export default defineComponent({
           scale.value -= 10
       }
     }
+
+    onMounted(() => {
+      scaleInstance = new Scale(100)
+      scaleInstance.init()
+    })
 
     return {
       scale,
