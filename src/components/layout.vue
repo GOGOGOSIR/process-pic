@@ -1,6 +1,6 @@
 <template>
   <div class="layout-wrapper">
-    <div class="flow-design">
+    <div ref="flowDesign" class="flow-design">
       <div class="zoom">
         <button @click="triggerCalcScale('reduce')">
           减少
@@ -10,7 +10,7 @@
           增加
         </button>
       </div>
-      <div class="box-scale" :style="{ transform: `scale(${scale / 100})` }">
+      <div ref="flowScale" class="box-scale" :style="{ transform: `scale(${scale / 100})` }">
         <template v-for="(item, index) in list" :key="index">
           <branch-item
             v-if="
@@ -36,11 +36,12 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, onMounted, ref, watch } from 'vue'
+import { defineComponent, nextTick, onMounted, ref, watch } from 'vue'
 import NodeItem from './node-item.vue'
 import EndItem from './end-item.vue'
 import BranchItem from './branch-item.vue'
 import Scale from './scale'
+import Drag from './drag'
 import type { PropType } from 'vue'
 import type { FlowItem } from './data'
 
@@ -64,6 +65,8 @@ export default defineComponent({
     const scale = ref(100) // 放大倍数
     const list = ref<FlowItem[]>(props.data)
     let scaleInstance: any
+    const flowDesign = ref()
+    const flowScale = ref()
 
     watch(
       () => props.data,
@@ -86,11 +89,18 @@ export default defineComponent({
     onMounted(() => {
       scaleInstance = new Scale(100)
       scaleInstance.init()
+      nextTick(() => {
+        console.log(flowDesign.value, flowScale.value)
+        const dragInstance = new Drag(flowDesign.value, flowScale.value)
+        console.log(dragInstance)
+      })
     })
 
     return {
       scale,
       list,
+      flowDesign,
+      flowScale,
       triggerCalcScale
     }
   }
